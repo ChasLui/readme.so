@@ -5,10 +5,6 @@ import { SectionsColumn } from '../SectionsColumn'
 
 import { en_EN } from '../../data/section-templates-en_EN'
 
-jest.mock('next-i18next', () => ({
-  useTranslation: () => ({ t: jest.fn() }),
-}))
-
 describe('<SectionsColumn />', () => {
   const props = {
     selectedSectionSlugs: ['title-and-description'],
@@ -27,7 +23,7 @@ describe('<SectionsColumn />', () => {
 
   it('should remove a selected section', () => {
     render(<SectionsColumn {...props} />)
-    const trashIcon = screen.getByAltText('trash-icon')
+    const trashIcon = screen.getByAltText('Delete section')
 
     expect(trashIcon).toBeInTheDocument()
     userEvent.click(trashIcon)

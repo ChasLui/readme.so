@@ -1,6 +1,12 @@
-import { useTranslation } from 'next-i18next'
-import { Fragment, useRef, useState } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
+import { useRef, useState } from 'react'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+  Transition,
+  TransitionChild,
+} from '@headlessui/react'
 import useLocalStorage from '../hooks/useLocalStorage'
 
 const CustomSection = ({
@@ -14,11 +20,17 @@ const CustomSection = ({
   const [title, setTitle] = useState('')
   const { saveBackup } = useLocalStorage()
 
-  const { t } = useTranslation('editor')
-
   const inputRef = useRef(null)
 
-  const addCustomSection = () => {
+  const addCustomSection = (e) => {
+    if (e) {
+      e.preventDefault()
+    }
+
+    if (!title) {
+      return
+    }
+
     setShowModal(false)
 
     const section = {
@@ -42,7 +54,7 @@ const CustomSection = ({
 
   return (
     <>
-      <Transition.Root show={showModal} as={Fragment}>
+      <Transition show={showModal}>
         <Dialog
           as="div"
           className="fixed z-10 inset-0 overflow-y-auto"
@@ -50,8 +62,7 @@ const CustomSection = ({
           onClose={() => setShowModal(false)}
         >
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <Transition.Child
-              as={Fragment}
+            <TransitionChild
               enter="ease-out duration-300"
               enterFrom="opacity-0"
               enterTo="opacity-100"
@@ -59,15 +70,14 @@ const CustomSection = ({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-            </Transition.Child>
+              <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </TransitionChild>
 
             {/* This element is to trick the browser into centering the modal contents. */}
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
               &#8203;
             </span>
-            <Transition.Child
-              as={Fragment}
+            <TransitionChild
               enter="ease-out duration-300"
               enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               enterTo="opacity-100 translate-y-0 sm:scale-100"
@@ -75,12 +85,12 @@ const CustomSection = ({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                <div>
+              <DialogPanel className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <form onSubmit={addCustomSection}>
                   <div className="mt-3 text-center sm:mt-5">
-                    <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
+                    <DialogTitle as="h3" className="text-lg leading-6 font-medium text-gray-900">
                       New Custom Section
-                    </Dialog.Title>
+                    </DialogTitle>
                     <div className="my-4">
                       <input
                         ref={inputRef}
@@ -90,10 +100,11 @@ const CustomSection = ({
                         onChange={(e) => setTitle(e.target.value)}
                         className="shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 block w-full sm:text-sm border border-gray-300 rounded-md"
                         placeholder="Section Title"
+                        aria-label="Section title"
                       />
                     </div>
                   </div>
-                </div>
+                </form>
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                   <button
                     type="button"
@@ -111,15 +122,15 @@ const CustomSection = ({
                     Cancel
                   </button>
                 </div>
-              </div>
-            </Transition.Child>
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </Dialog>
-      </Transition.Root>
+      </Transition>
 
       <div className="mb-3">
         <button
-          className="flex items-center justify-center block w-full h-full py-2 pl-3 pr-6 bg-white dark:bg-gray-200 font-bold rounded-md shadow cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-400"
+          className="flex items-center justify-center w-full h-full py-2 pl-3 pr-6 bg-white font-bold rounded-md shadow cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-400 transition-colors"
           type="button"
           onClick={() => setShowModal(true)}
         >
@@ -135,7 +146,7 @@ const CustomSection = ({
               clipRule="evenodd"
             />
           </svg>
-          <span className="ml-1">{t('custom-section')}</span>
+          <span className="ml-1">Custom Section</span>
         </button>
       </div>
     </>

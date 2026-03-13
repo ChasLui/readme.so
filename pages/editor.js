@@ -1,15 +1,14 @@
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { DownloadModal } from '../components/DownloadModal'
 import EditPreviewContainer from '../components/EditPreviewContainer'
 import { Nav } from '../components/Nav'
 import { SectionsColumn } from '../components/SectionsColumn'
-import allSectionTemplates from '../data/index'
+import { en_EN } from '../data/section-templates-en_EN'
 import useLocalStorage from '../hooks/useLocalStorage'
-import useDarkMode from '../hooks/useDarkMode'
 
-export default function Editor({ sectionTemplates }) {
+export default function Editor() {
+  const sectionTemplates = en_EN
   const [selectedSectionSlugs, setSelectedSectionSlugs] = useState([])
   const [sectionSlugs, setSectionSlugs] = useState(sectionTemplates.map((t) => t.slug))
   const [focusedSectionSlug, setFocusedSectionSlug] = useState(null)
@@ -17,7 +16,6 @@ export default function Editor({ sectionTemplates }) {
   const [templates, setTemplates] = useState(sectionTemplates)
   const [showDrawer, toggleDrawer] = useState(false)
   const { backup } = useLocalStorage()
-  const [darkMode, setDarkMode] = useDarkMode()
 
   useEffect(() => {
     if (backup) {
@@ -32,18 +30,6 @@ export default function Editor({ sectionTemplates }) {
   useEffect(() => {
     setFocusedSectionSlug(null)
   }, [])
-
-  useEffect(() => {
-    let currentSlugList = localStorage.getItem('current-slug-list')
-    if (
-      currentSlugList.indexOf('title-and-description') == -1 &&
-      selectedSectionSlugs.indexOf('title-and-description') > -1
-    ) {
-      selectedSectionSlugs.splice(selectedSectionSlugs.indexOf('title-and-description'), 1)
-    }
-    setFocusedSectionSlug(localStorage.getItem('current-slug-list').split(',')[0])
-    localStorage.setItem('current-slug-list', selectedSectionSlugs)
-  }, [selectedSectionSlugs])
 
   const drawerClass = showDrawer ? '' : '-translate-x-full md:transform-none'
 
@@ -72,15 +58,13 @@ export default function Editor({ sectionTemplates }) {
         getTemplate={getTemplate}
         onMenuClick={() => toggleDrawer(!showDrawer)}
         isDrawerOpen={showDrawer}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
         focusedSectionSlug={focusedSectionSlug}
       />
-      {showModal && <DownloadModal setShowModal={setShowModal} />}
-      <div className="flex md:px-6 md:pt-6 ">
+      <DownloadModal showModal={showModal} setShowModal={setShowModal} />
+      <div className="flex md:px-6 md:pt-6">
         <div
-          className={`flex flex-0 drawer-height absolute md:static p-6 md:p-0 bg-white dark:bg-gray-800 md:bg-transparent shadow md:shadow-none z-10 md:z-0
-        transform  transition-transform duration-500 ease-in-out ${drawerClass}`}
+          className={`flex flex-0 drawer-height absolute md:static p-6 md:p-0 bg-white md:bg-transparent shadow md:shadow-none z-10 md:z-0
+        transform transition-transform duration-300 ease-out ${drawerClass}`}
         >
           <SectionsColumn
             selectedSectionSlugs={selectedSectionSlugs}
@@ -93,7 +77,6 @@ export default function Editor({ sectionTemplates }) {
             originalTemplate={sectionTemplates}
             setTemplates={setTemplates}
             getTemplate={getTemplate}
-            darkMode={darkMode}
           />
         </div>
 
@@ -102,25 +85,9 @@ export default function Editor({ sectionTemplates }) {
           setTemplates={setTemplates}
           getTemplate={getTemplate}
           focusedSectionSlug={focusedSectionSlug}
-          setFocusedSectionSlug={setFocusedSectionSlug}
           selectedSectionSlugs={selectedSectionSlugs}
-          setSelectedSectionSlugs={setSelectedSectionSlugs}
-          darkMode={darkMode}
         />
       </div>
     </div>
   )
-}
-
-export const getStaticProps = async ({ locale }) => {
-  const sectionTemplates = allSectionTemplates[locale]
-    ? allSectionTemplates[locale]
-    : allSectionTemplates['en']
-  const i18n = await serverSideTranslations(locale, ['editor'])
-  return {
-    props: {
-      sectionTemplates,
-      ...i18n,
-    },
-  }
 }

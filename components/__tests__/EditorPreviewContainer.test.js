@@ -4,10 +4,6 @@ import userEvent from '@testing-library/user-event'
 
 import { en_EN } from '../../data/section-templates-en_EN'
 
-jest.mock('next-i18next', () => ({
-  useTranslation: () => ({ t: jest.fn() }),
-}))
-
 describe('<EditorPreviewColumn />', () => {
   beforeEach(() => {
     jest.useFakeTimers()
@@ -32,14 +28,5 @@ describe('<EditorPreviewColumn />', () => {
 
     userEvent.click(screen.getByText(/Raw/))
     expect(screen.getByText(/Raw/)).toHaveClass('text-emerald-500')
-  })
-
-  it('should toggle dark/light mode', () => {
-    render(<EditorPreviewColumn templates={en_EN} />)
-    userEvent.click(screen.getByLabelText('Color Mode'))
-    expect(screen.getByAltText('light')).toBeInTheDocument()
-
-    userEvent.click(screen.getByLabelText('Color Mode'))
-    expect(screen.getByAltText('dark')).toBeInTheDocument()
   })
 })

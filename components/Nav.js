@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
 import Menu from './icons/Menu'
 import Close from './icons/Close'
 import useDeviceDetect from '../hooks/useDeviceDetect'
@@ -11,8 +9,6 @@ export const Nav = ({
   getTemplate,
   onMenuClick,
   isDrawerOpen,
-  darkMode,
-  setDarkMode,
   focusedSectionSlug,
 }) => {
   const markdown = selectedSectionSlugs.reduce((acc, section) => {
@@ -38,19 +34,19 @@ export const Nav = ({
     setShowModal(true)
   }
 
-  const { t } = useTranslation('editor')
-
   return (
     <nav className="flex justify-between p-4 bg-gray-800 align-center w-full">
-      <Link href="/">
-        <a className="focus:outline-none focus:ring-2 focus:ring-emerald-400 flex items-center">
-          <img className="w-auto h-12" src="readme.svg" alt="readme.so logo" />
-        </a>
+      <Link
+        href="/"
+        className="focus:outline-none focus:ring-2 focus:ring-emerald-400 flex items-center"
+      >
+        <img className="w-auto h-12" src="readme.svg" alt="readme.so logo" />
       </Link>
       <div className="flex flex-row-reverse md:flex-row">
         {/* visible for sm only */}
         <button
           className="focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          aria-label={isDrawerOpen ? 'Close menu' : 'Open menu'}
           onClick={onMenuClick}
         >
           {isDrawerOpen ? (
@@ -60,21 +56,6 @@ export const Nav = ({
           )}
         </button>
         {/* visible for md and above */}
-        {focusedSectionSlug !== 'noEdit' && (
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            aria-label="Color Mode"
-            className="toggle-dark-mode focus:outline-none transition transform motion-reduce:transition-none motion-reduce:transform-none  pr-4"
-          >
-            <Image
-              className="w-auto h-8 mr-2"
-              alt={darkMode ? 'dark' : 'light'}
-              src={darkMode ? '/toggle_sun.svg' : '/toggle_moon.svg'}
-              width={40}
-              height={40}
-            />
-          </button>
-        )}
 
         <button
           type="button"
@@ -82,8 +63,8 @@ export const Nav = ({
           className="flex flex-row relative items-center mr-4 md:mr-0 px-4 py-2 text-sm font-bold tracking-wide text-white border border-transparent rounded-md shadow-sm bg-emerald-500 hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-emerald-500"
           onClick={downloadMarkdownFile}
         >
-          <img className="w-auto h-6 cursor-pointer" src="download.svg" />
-          <span className="hidden md:inline-block ml-2">{t('nav-download')}</span>
+          <img className="w-auto h-6 cursor-pointer" src="download.svg" alt="Download" />
+          <span className="hidden md:inline-block ml-2">Download</span>
         </button>
       </div>
     </nav>
